@@ -15,12 +15,15 @@ class CarSerializer(serializers.ModelSerializer):
         If the same car came again to parking lot, the previous register
         will be deleted.
         """
-        car = Car.objects.filter(plate=validated_data.get("plate"))[0]
-        if car:
-            if not car.left:
-                raise serializers.ValidationError(
-                    "This car is already at parking lot and don't left yet."
-                )
-            elif car.left:
-                car.delete()
+        try:
+            car = Car.objects.filter(plate=validated_data.get("plate"))[0]
+            if car:
+                if not car.left:
+                    raise serializers.ValidationError(
+                        "This car is already at parking lot and don't left yet."
+                    )
+                elif car.left:
+                    car.delete()
+        except IndexError:
+            pass
         return Car.objects.create(**validated_data)
