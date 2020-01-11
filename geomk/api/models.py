@@ -1,15 +1,7 @@
 from django.db import models
-from datetime import timedelta
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 import re
-
-
-# def get_entry_datetime() -> str:
-#     """
-#     Get the entry datetime when the car arrives to parking lot.
-#     """
-#     return now()
 
 
 def validate_plate(plate: str) -> bool:
@@ -19,7 +11,7 @@ def validate_plate(plate: str) -> bool:
     regexp = r"^[A-Z]{3}-\d{4}$"
     if not re.search(regexp, plate):
         raise ValidationError(
-            f"{plate} isn't a valid plate format. The correct format is AAA-1234"
+            f"{plate} isn't a valid plate format. " "The correct format is AAA-1234"
         )
 
 

@@ -28,10 +28,7 @@ class Migration(migrations.Migration):
                     "entry_time",
                     models.DateTimeField(default=django.utils.timezone.now),
                 ),
-                (
-                    "left_time",
-                    models.DateTimeField(default="2020-01-01T00:00:00.00"),
-                ),
+                ("left_time", models.DateTimeField(default="2020-01-01T00:00:00.00"),),
                 ("time", models.CharField(default="0 minutes", max_length=13)),
                 ("paid", models.BooleanField(default=False)),
                 ("left", models.BooleanField(default=False)),

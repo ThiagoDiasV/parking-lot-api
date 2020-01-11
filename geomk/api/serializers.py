@@ -20,7 +20,7 @@ class CarSerializer(serializers.ModelSerializer):
             if car:
                 if not car.left:
                     raise serializers.ValidationError(
-                        "This car is already at parking lot and don't left yet."
+                        "Car already at parking lot and don't left yet."
                     )
                 elif car.left:
                     car.delete()
