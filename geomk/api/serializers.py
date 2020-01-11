@@ -1,6 +1,5 @@
 from .models import Car
 from rest_framework import serializers
-from django.utils.timezone import now
 
 
 class CarSerializer(serializers.ModelSerializer):
@@ -9,15 +8,23 @@ class CarSerializer(serializers.ModelSerializer):
         fields = ["id", "entry_time", "left_time", "time", "paid", "left", "plate"]
         read_only_fields = ["entry_time", "left_time", "time", "paid", "left"]
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict) -> Car:
+        """
+        Overriding create function to avoid POST with cars that already
+        are at parking lot and don't left yet.
+        """
         car = Car.objects.filter(plate=validated_data.get("plate"))
         if car:
             if not car[0].left:
-                # from ipdb import set_trace; set_trace()
                 raise serializers.ValidationError(
                     "This car is already at parking lot and don't left yet."
                 )
         return Car.objects.create(**validated_data)
+
+    # def update(self, instance: Car, validated_data: dict):
+    #     """
+    #     Overriding update function to
+    #     """
 
     # def update(self, instance, validated_data):
     #     from ipdb import set_trace
