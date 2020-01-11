@@ -18,9 +18,9 @@ class CarViewSet(viewsets.ModelViewSet):
                 {
                     "message": "Instance not found. "
                     "If you are searching for a car by id, "
-                    "try to search by plate number",
-                    "HTTP status": f"{status.HTTP_404_NOT_FOUND} - NOT FOUND",
-                }
+                    "try to search by plate number"
+                },
+                status=status.HTTP_404_NOT_FOUND,
             )
         car_serialized = CarSerializer(car)
         car_serialized = {
@@ -34,10 +34,8 @@ class CarViewSet(viewsets.ModelViewSet):
         car = Car.objects.filter(plate=pk)[0]
         car.delete()
         return Response(
-            {
-                "message": "Instance was succesfully deleted",
-                "HTTP status": f"{status.HTTP_204_NO_CONTENT} - NO CONTENT",
-            }
+            {"message": "Instance was succesfully deleted"},
+            status=status.HTTP_204_NO_CONTENT,
         )
 
     @action(detail=True, methods=["get", "put"])
@@ -47,18 +45,13 @@ class CarViewSet(viewsets.ModelViewSet):
             car.paid = True
             car.save()
             return Response(
-                {
-                    "message": "The ticket was succesfully paid",
-                    "HTTP status": f"{status.HTTP_200_OK} - OK"
-                }
+                {"message": "The ticket was paid succesfully"},
+                status=status.HTTP_200_OK,
             )
         else:
             return Response(
-                {
-                    "message": "This car's ticket was already paid",
-                    "HTTP status": f"{status.HTTP_400_BAD_REQUEST} "
-                    "- BAD REQUEST"
-                }
+                {"message": "This car's ticket was already paid"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
     @action(detail=True, methods=["get", "put"])
@@ -68,10 +61,9 @@ class CarViewSet(viewsets.ModelViewSet):
             return Response(
                 {
                     "message": "This car can't leave parking lot before "
-                    "paying the ticket",
-                    "HTTP status": f"{status.HTTP_301_MOVED_PERMANENTLY} "
-                    "- MOVED PERMANENTLY"
-                }
+                    "paying the ticket"
+                },
+                status=status.HTTP_401_UNAUTHORIZED,
             )
         elif not car.left:
             car.left = True
@@ -83,16 +75,15 @@ class CarViewSet(viewsets.ModelViewSet):
             return Response(
                 {
                     "message": "Ok, you can leave. Thanks and we "
-                    "expect to see you again.",
-                    "HTTP status": f"{status.HTTP_200_OK} - OK"
-                }
+                    "expect to see you again."
+                },
+                status=status.HTTP_200_OK,
             )
         else:
             return Response(
                 {
                     "message": "There isn't a car with this "
-                    "specifications at parking lot",
-                    "HTTP status": f"{status.HTTP_400_BAD_REQUEST} "
-                    "- BAD REQUEST"
-                }
+                    "specifications at parking lot"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
             )

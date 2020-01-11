@@ -18,7 +18,7 @@ class BaseTestCase(TestCase):
             time="0 minutes",
             paid=False,
             left=False,
-            plate="AAA-99999"
+            plate="AAA-99999",
         )
         self.car_with_correct_plate_1 = Car(
             id=1,
@@ -27,5 +27,50 @@ class BaseTestCase(TestCase):
             time="0 minutes",
             paid=False,
             left=False,
-            plate="AAA-9999"
+            plate="AAA-5965",
+        )
+        self.car_already_at_parking_lot = Car(
+            id=10,
+            entry_time="2020-01-11T09:52:00.111562-03:00",
+            left_time="2020-01-01T00:00:00-03:00",
+            time="0 minutes",
+            paid=False,
+            left=False,
+            plate="AAA-1111",
+        )
+        self.car_with_wrong_parameters_paid_and_left = Car(
+            id=2,
+            entry_time="2020-01-12T06:52:00.111562-03:00",
+            left_time="2020-01-01T00:00:00-03:00",
+            time="0 minutes",
+            paid=False,
+            left=True,
+            plate="AAA-9999",
+        )
+        self.car_1_at_database = Car.objects.create(
+            id=3,
+            entry_time="2020-01-11T09:52:00.111562-03:00",
+            left_time="2020-01-01T00:00:00-03:00",
+            time="0 minutes",
+            paid=False,
+            left=False,
+            plate="AAA-1111",
+        )
+        self.car_2_at_database = Car.objects.create(
+            id=4,
+            entry_time="2020-01-11T09:52:00.111562-03:00",
+            left_time="2020-01-01T00:00:00-03:00",
+            time="0 minutes",
+            paid=True,
+            left=False,
+            plate="AAA-1111",
+        )
+        self.car_3_at_database = Car.objects.create(
+            id=5,
+            entry_time="2020-01-11T09:52:00.111562-03:00",
+            left_time="2020-01-01T00:00:00-03:00",
+            time="0 minutes",
+            paid=True,
+            left=True,
+            plate="AAA-1111",
         )
