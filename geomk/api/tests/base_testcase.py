@@ -38,6 +38,15 @@ class BaseTestCase(TestCase):
             left=False,
             plate="AAA-1111",
         )
+        self.returned_car = Car(
+            id=5,
+            entry_time="2020-01-11T09:52:00.111562-03:00",
+            left_time="2020-01-01T00:00:00-03:00",
+            time="0 minutes",
+            paid=False,
+            left=False,
+            plate="AAA-1113",
+        )
         self.car_with_wrong_parameters_paid_and_left = Car(
             id=2,
             entry_time="2020-01-12T06:52:00.111562-03:00",
@@ -63,7 +72,7 @@ class BaseTestCase(TestCase):
             time="0 minutes",
             paid=True,
             left=False,
-            plate="AAA-1111",
+            plate="AAA-1112",
         )
         self.car_3_at_database = Car.objects.create(
             id=5,
@@ -72,5 +81,5 @@ class BaseTestCase(TestCase):
             time="0 minutes",
             paid=True,
             left=True,
-            plate="AAA-1111",
+            plate="AAA-1113",
         )

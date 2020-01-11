@@ -13,4 +13,7 @@ class BaseAPITestCase(APITestCase, BaseTestCase):
         self.car_already_at_parking_lot_json_repr = CarSerializer(
             self.car_already_at_parking_lot
         )
+        self.leaving_car_json_repr = CarSerializer(
+            self.returned_car
+        )
         self.wrong_car_json_repr = CarSerializer(self.car_with_wrong_plate_1)

@@ -84,3 +84,12 @@ class CarApiTests(BaseAPITestCase, BaseTestCase):
         self.assertEqual(
             response_200_OK.status_code, status.HTTP_200_OK
         )
+
+    def test_if_a_car_that_already_left_can_came_by_again(self):
+        response_201_CREATED = self.client.post(
+            self.main_url, self.leaving_car_json_repr.data,
+            format="json"
+        )
+        self.assertEqual(
+            response_201_CREATED.status_code, status.HTTP_201_CREATED
+        )
