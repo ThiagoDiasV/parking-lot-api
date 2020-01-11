@@ -18,7 +18,10 @@ class CarViewSet(viewsets.ModelViewSet):
                 {
                     "message": "Instance not found. "
                     "If you are searching for a car by id, "
-                    "try to search by plate number"
+                    "try to search by plate number. "
+                    "Remember to search using uppercase: "
+                    "/parking/AAA-1234 instead of "
+                    "/parking/aaa-1234."
                 },
                 status=status.HTTP_404_NOT_FOUND,
             )

@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  web:
+    build: .
+    command: bash -c "python geomk/manage.py makemigrations && python geomk/manage.py migrate && python geomk/manage.py test api.tests && python geomk/manage.py runserver 0.0.0.0:8000"
+    container_name: geomk
+    volumes:
+      - .:/geomk
+    ports:
+      - "8000:8000"
