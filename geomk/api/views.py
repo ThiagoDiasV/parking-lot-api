@@ -11,7 +11,7 @@ class CarViewSet(viewsets.ModelViewSet):
     serializer_class = CarSerializer
 
     @action(detail=True, methods=["get", "put"])
-    def pay(self, request, pk):
+    def pay(self, request, pk) -> Response:
         car = self.get_object()
         if not car.paid:
             car.paid = True
@@ -28,7 +28,7 @@ class CarViewSet(viewsets.ModelViewSet):
             )
 
     @action(detail=True, methods=["get", "put"])
-    def out(self, request, pk):
+    def out(self, request, pk) -> Response:
         car = self.get_object()
         if not car.paid:
             return Response(
@@ -40,7 +40,9 @@ class CarViewSet(viewsets.ModelViewSet):
         elif not car.left:
             car.left = True
             car.left_time = now()
-            car.time = car.left_time - car.entry_time
+            duration_in_seconds = (car.left_time - car.entry_time).seconds
+            duration_in_minutes = round(duration_in_seconds / 60)
+            car.time = f'{duration_in_minutes} minutes'
             car.save()
             return Response(
                 {
