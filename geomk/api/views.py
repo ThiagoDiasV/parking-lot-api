@@ -29,8 +29,10 @@ def search_registers_by_id(pk: str) -> Response:
     except Car.DoesNotExist:
         return Response(
             {"message": "There isn't an instance with this id at database"},
-            status=status.HTTP_404_NOT_FOUND
+            status=status.HTTP_404_NOT_FOUND,
         )
+    if not car.left:
+        calculate_time_spent_of_cars(car)
     serialized_car = CarSerializer(car)
     return Response(serialized_car.data)
 
@@ -43,15 +45,14 @@ def search_cars_by_plate(pk: str) -> Response:
     if not cars:
         return Response(
             {"message": "There aren't registers for this plate"},
-            status=status.HTTP_404_NOT_FOUND
+            status=status.HTTP_404_NOT_FOUND,
         )
     for car in cars:
         if not car.left:
             calculate_time_spent_of_cars(car)
     serialized_cars = [CarSerializer(car).data for car in cars]
     serialized_cars_without_left_time_data = [
-        {k: v for k, v in car.items() if k != "left_time"}
-        for car in serialized_cars
+        {k: v for k, v in car.items() if k != "left_time"} for car in serialized_cars
     ]
     return Response(serialized_cars_without_left_time_data)
 
@@ -79,7 +80,7 @@ class CarViewSet(viewsets.ModelViewSet):
             except ValidationError:
                 return Response(
                     {"message": "Invalid plate format. Correct format: AAA-1111"},
-                    status=status.HTTP_400_BAD_REQUEST
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
             response = search_cars_by_plate(pk)
             return response
@@ -97,12 +98,14 @@ class CarViewSet(viewsets.ModelViewSet):
             except Car.DoesNotExist:
                 return Response(
                     {"message": "There isn't an instance with this id at database"},
-                    status=status.HTTP_404_NOT_FOUND
+                    status=status.HTTP_404_NOT_FOUND,
                 )
             if entry_register:
                 entry_register.delete()
                 return Response(
-                    {"message": "This entry register was succesfully deleted from records"},
+                    {
+                        "message": "This entry register was succesfully deleted from records"
+                    },
                     status=status.HTTP_204_NO_CONTENT,
                 )
             else:
@@ -116,7 +119,7 @@ class CarViewSet(viewsets.ModelViewSet):
             except ValidationError:
                 return Response(
                     {"message": "This isn't a valid plate format"},
-                    status=status.HTTP_400_BAD_REQUEST
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
             car = Car.objects.filter(plate=pk)
             if car:
@@ -128,7 +131,7 @@ class CarViewSet(viewsets.ModelViewSet):
             else:
                 return Response(
                     {"message": "There isn't a car matching this query."},
-                    status=status.HTTP_404_NOT_FOUND
+                    status=status.HTTP_404_NOT_FOUND,
                 )
 
     @action(detail=True, methods=["get", "put"])

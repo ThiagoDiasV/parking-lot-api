@@ -53,9 +53,7 @@ class CarApiTests(BaseAPITestCase, BaseTestCase):
         response_404_NOT_FOUND = self.client.delete(
             f"{self.main_url}250/", format="json"
         )
-        self.assertEqual(
-            response_404_NOT_FOUND.status_code, status.HTTP_404_NOT_FOUND
-        )
+        self.assertEqual(response_404_NOT_FOUND.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_if_a_car_with_unpaid_ticket_can_leave_parking_lot(self):
         response_401_UNAUTHORIZED = self.client.put(

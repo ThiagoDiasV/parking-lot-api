@@ -12,8 +12,8 @@ class CarSerializer(serializers.ModelSerializer):
         """
         Overriding create function to avoid POST with cars that already
         are at parking lot and don't left yet.
-        If the same car came again to parking lot, the previous register
-        will be deleted.
+        Cars with plate registered can only enter if they already left other
+        time.
         """
         try:
             car = Car.objects.filter(plate=validated_data.get("plate"))[0]
