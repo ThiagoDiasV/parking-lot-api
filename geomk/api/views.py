@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from django.utils.timezone import now
 from django.core.exceptions import ValidationError
+from typing import Union, List
 
 
 def calculate_time_spent_of_cars(car: Car) -> None:
@@ -20,7 +21,21 @@ def calculate_time_spent_of_cars(car: Car) -> None:
     car.save()
 
 
-def search_registers_by_id(pk: str) -> Response:
+def check_plate_mask_with_a_try_except_block(pk: str) -> Union[None, Response]:
+    """
+    The code below is repetitive inside this views.py file.
+    To avoid repetition, this function is in charge to make this task.
+    """
+    try:
+        validate_plate(pk)
+    except ValidationError:
+        return Response(
+            {"message": "Invalid plate format. Correct format: AAA-1111"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+def search_by_id_with_a_try_except_block(pk: str) -> Union[Car, Response]:
     """
     Try to search an id = pk sent by request.
     """
@@ -31,13 +46,10 @@ def search_registers_by_id(pk: str) -> Response:
             {"message": "There isn't an instance with this id at database"},
             status=status.HTTP_404_NOT_FOUND,
         )
-    if not car.left:
-        calculate_time_spent_of_cars(car)
-    serialized_car = CarSerializer(car)
-    return Response(serialized_car.data)
+    return car
 
 
-def search_cars_by_plate(pk: str) -> Response:
+def search_cars_by_plate(pk: str) -> Union[Response, List[dict]]:
     """
     Try to search cars by plate number.
     """
@@ -54,7 +66,7 @@ def search_cars_by_plate(pk: str) -> Response:
     serialized_cars_without_left_time_data = [
         {k: v for k, v in car.items() if k != "left_time"} for car in serialized_cars
     ]
-    return Response(serialized_cars_without_left_time_data)
+    return serialized_cars_without_left_time_data
 
 
 class CarViewSet(viewsets.ModelViewSet):
@@ -64,7 +76,7 @@ class CarViewSet(viewsets.ModelViewSet):
     def retrieve(self, request: Request, pk: str) -> Response:
         """
         Retrieve function overrided to allow retrieving data by id
-        and by plate number. Here it's a pk checker. If pk is a digit,
+        and by plate number. Here we have a pk checker. If pk is a digit,
         then this function will try to retrieve the corresponding register.
         If not, it will try to match the sent pk with a plate mask.
         With a match, this plate number will be searched in database.
@@ -72,18 +84,26 @@ class CarViewSet(viewsets.ModelViewSet):
         number can return all registers with the correspondig plate number.
         """
         if pk.isdigit():
-            response = search_registers_by_id(pk)
-            return response
+            car_or_response_404 = search_by_id_with_a_try_except_block(pk)
+            if type(car_or_response_404) == Response:
+                response_404 = car_or_response_404
+                return response_404
+            car = car_or_response_404
+            if not car.left:
+                calculate_time_spent_of_cars(car)
+            serialized_car = CarSerializer(car)
+            return Response(serialized_car.data)
         else:
-            try:
-                validate_plate(pk)
-            except ValidationError:
-                return Response(
-                    {"message": "Invalid plate format. Correct format: AAA-1111"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            response = search_cars_by_plate(pk)
-            return response
+            response_400_or_none = check_plate_mask_with_a_try_except_block(pk)
+            if type(response_400_or_none) == Response:
+                response_400 = response_400_or_none
+                return response_400
+            serialized_cars_or_response_404 = search_cars_by_plate(pk)
+            if type(serialized_cars_or_response_404) == Response:
+                response_404 = serialized_cars_or_response_404
+                return response_404
+            serialized_cars = serialized_cars_or_response_404
+            return Response(serialized_cars)
 
     def destroy(self, request: Request, pk: str) -> Response:
         """
@@ -93,13 +113,11 @@ class CarViewSet(viewsets.ModelViewSet):
         by plate will delete corresponding car from records. 
         """
         if pk.isdigit():
-            try:
-                entry_register = Car.objects.get(pk=pk)
-            except Car.DoesNotExist:
-                return Response(
-                    {"message": "There isn't an instance with this id at database"},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
+            entry_register_or_response_404 = search_by_id_with_a_try_except_block(pk)
+            if type(entry_register_or_response_404) == Response:
+                response_404 = entry_register_or_response_404
+                return response_404
+            entry_register = entry_register_or_response_404
             if entry_register:
                 entry_register.delete()
                 return Response(
@@ -114,13 +132,10 @@ class CarViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_404_NOT_FOUND,
                 )
         else:
-            try:
-                validate_plate(pk)
-            except ValidationError:
-                return Response(
-                    {"message": "This isn't a valid plate format"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+            response_400_or_none = check_plate_mask_with_a_try_except_block(pk)
+            if type(response_400_or_none) == Response:
+                response_400 = response_400_or_none
+                return response_400
             car = Car.objects.filter(plate=pk)
             if car:
                 car.delete()

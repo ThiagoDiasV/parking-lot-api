@@ -12,18 +12,17 @@ class CarSerializer(serializers.ModelSerializer):
         """
         Overriding create function to avoid POST with cars that already
         are at parking lot and don't left yet.
-        Cars with plate registered can only enter if they already left other
+        Cars with plate registered can only enter if they already left the last
         time.
         """
         try:
-            car = Car.objects.filter(plate=validated_data.get("plate"))[0]
-            if car:
-                if not car.left:
+            cars = Car.objects.filter(plate=validated_data.get("plate"))
+            last_register = cars.last()
+            if last_register:
+                if not last_register.left:
                     raise serializers.ValidationError(
                         "Car already at parking lot and don't left yet."
                     )
-                # elif car.left:
-                #     car.delete()
         except IndexError:
             pass
         return Car.objects.create(**validated_data)

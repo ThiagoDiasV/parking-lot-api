@@ -31,17 +31,25 @@ class CarApiTests(BaseAPITestCase, BaseTestCase):
         )
         self.assertEqual(response_400_BR.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_if_is_it_possible_to_get_car_history_by_plate_instead_by_id(self):
+    def test_if_it_is_possible_to_get_car_history_by_plate_instead_by_id(self):
         response_200_OK = self.client.get(
             f"{self.main_url}{self.car_1_at_database.plate}/", format="json",
         )
         self.assertEqual(response_200_OK.status_code, status.HTTP_200_OK)
 
-    def test_if_is_possible_to_get_entry_register_by_id(self,):
+    def test_if_it_is_possible_to_get_entry_register_by_id(self):
         response_200_OK = self.client.get(f"{self.main_url}3/", format="json",)
         self.assertEqual(response_200_OK.status_code, status.HTTP_200_OK)
 
-    def test_if_is_possible_to_delete_car_from_database(self):
+    def test_if_unexisting_id_will_return_http_404(self):
+        response_404_NOT_FOUND = self.client.get(f"{self.main_url}666/", format="json")
+        self.assertEqual(response_404_NOT_FOUND.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_if_incorrect_plate_format_will_return_http_400(self):
+        response_400_BR = self.client.get(f"{self.main_url}{self.wrong_plate_1}/", format="json")
+        self.assertEqual(response_400_BR.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_if_it_is_possible_to_delete_car_by_plate_from_database(self):
         response_204_NO_CONTENT = self.client.delete(
             f"{self.main_url}{self.car_1_at_database.plate}/", format="json"
         )
@@ -49,7 +57,15 @@ class CarApiTests(BaseAPITestCase, BaseTestCase):
             response_204_NO_CONTENT.status_code, status.HTTP_204_NO_CONTENT
         )
 
-    def test_if_is_possible_to_delete_unexisting_car_from_database(self):
+    def test_if_it_is_possible_to_delete_register_by_id_from_database(self):
+        response_204_NO_CONTENT = self.client.delete(
+            f"{self.main_url}{self.car_1_at_database.id}/", format="json"
+        )
+        self.assertEqual(
+            response_204_NO_CONTENT.status_code, status.HTTP_204_NO_CONTENT
+        )
+
+    def test_if_it_is_possible_to_delete_unexisting_car_from_database(self):
         response_404_NOT_FOUND = self.client.delete(
             f"{self.main_url}250/", format="json"
         )
