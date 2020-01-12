@@ -89,3 +89,165 @@ Returns json or html data with created entry.
   - Content
 
     `{ "plate": [ "OBA-12345 isn't a valid plate format. The correct format is AAA-1111", "Ensure this field has no more than 8 characters." ] }`
+
+### Retrieve all registers by plate number
+
+Returns json or html data with all registers by plate number.
+
+- URL
+
+  `/parking/{plate}`
+
+- Method
+
+  `GET`
+
+- URL params
+
+  `None`
+
+- Data params
+
+  `None`
+
+- Success Response
+
+  - HTTP status code
+
+    `200 OK`
+
+  - Content
+
+    `[ { "id": 1, "entry_time": "2020-01-12T19:23:45.872121-03:00", "time": "1 minutes", "paid": true, "left": true, "plate": "AAA-9999" }, { "id": 6, "entry_time": "2020-01-12T19:38:19.381873-03:00", "time": "0 minutes", "paid": true, "left": true, "plate": "AAA-9999" }, { "id": 7, "entry_time": "2020-01-12T19:38:58.615309-03:00", "time": "0 minutes", "paid": false, "left": false, "plate": "AAA-9999" } ]`
+
+Obs: Here I preferred to output the `entry_time` parameter too to check the date of each register.
+
+- Error Response
+
+  - HTTP status code
+
+    `400 BAD REQUEST`
+
+  - Content
+
+    `{ "message": "Invalid plate format. Correct format: AAA-1111" }`
+
+### Retrieve a single register by id
+
+Returns json or html data with a single register by id.
+
+- URL
+
+  `/parking/{id}`
+
+- Method
+
+  `GET`
+
+- URL params
+
+  `None`
+
+- Data params
+
+  `None`
+
+- Success Response
+
+  - HTTP status code
+
+    `200 OK`
+
+  - Content
+
+    `{ "id": 6, "entry_time": "2020-01-12T19:38:19.381873-03:00", "left_time": "2020-01-12T19:38:49.595282-03:00", "time": "0 minutes", "paid": true, "left": true, "plate": "AAA-9999" }`
+
+- Error Response
+
+  - HTTP status code
+
+    `400 BAD REQUEST`
+
+  - Content
+
+    `{ "message": "There isn't an instance with this id at database" }`
+
+### Pay the ticket
+
+Returns json or html data with a status message.
+
+- URL
+
+  `/parking/{id}/pay/`
+
+- Method
+
+  `PUT`
+
+- URL params
+
+  `None`
+
+- Data params
+
+  `None`
+
+- Success Response
+
+  - HTTP status code
+
+    `200 OK`
+
+  - Content
+
+    `{ "message": "The ticket was paid succesfully" }`
+
+- Error Response
+
+  - HTTP status code
+
+    `400 BAD REQUEST`
+
+  - Content
+
+    `{ "message": "This car's ticket was already paid" }`
+
+### Leave the parking lot
+
+Returns json or html data with a status message.
+
+- URL
+
+  `/parking/{id}/out/`
+
+- Method
+
+  `PUT`
+
+- URL params
+
+  `None`
+
+- Data params
+
+  `None`
+
+- Success Response
+
+  - HTTP status code
+
+    `200 OK`
+
+  - Content
+
+    `{ "message": "Ok, you can leave. Thanks and we expect to see you again." }`
+
+- Error Response
+
+  - HTTP status code
+
+    `400 BAD REQUEST`
+
+  - Content
+
+    `{ "message": "There isn't a car with this specifications at parking lot" }`
