@@ -22,7 +22,7 @@ OR
 
 Now, access the parking-mk-challenge directory:
 
-root \$ cd parking-mk-challenge/
+    root $ cd parking-mk-challenge/
 
 And then with Docker and docker-compose, run:
 
