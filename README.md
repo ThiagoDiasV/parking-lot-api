@@ -96,7 +96,7 @@ Returns json or html data with all registers by plate number.
 
 - URL
 
-  `/parking/{plate}`
+  `/parking/{plate}/`
 
 - Method
 
@@ -138,7 +138,7 @@ Returns json or html data with a single register by id.
 
 - URL
 
-  `/parking/{id}`
+  `/parking/{id}/`
 
 - Method
 
