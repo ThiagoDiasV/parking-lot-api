@@ -1,19 +1,33 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from .models import Car
+from .models import Car, validate_plate
 from .serializers import CarSerializer
 from rest_framework.response import Response
+from rest_framework.request import Request
 from django.utils.timezone import now
+from django.core.exceptions import ValidationError
+
+
+def calculate_time_spent_of_cars(car: Car) -> None:
+    """
+    Calculate the time spent of a car at parking lot when the info
+    by plate is retrieved.
+    """
+    car.left_time = now()
+    duration_in_seconds = (car.left_time - car.entry_time).seconds
+    duration_in_minutes = round(duration_in_seconds / 60)
+    car.time = f"{duration_in_minutes} minutes"
+    car.save()
 
 
 class CarViewSet(viewsets.ModelViewSet):
     queryset = Car.objects.all()
     serializer_class = CarSerializer
 
-    def retrieve(self, request, pk):
-        try:
-            car = Car.objects.filter(plate=pk)[0]
-        except IndexError:
+    def retrieve(self, request: Request, pk: str) -> Response:
+        try: 
+            validate_plate(pk)
+        except ValidationError:
             return Response(
                 {
                     "message": "Instance not found. "
@@ -25,24 +39,27 @@ class CarViewSet(viewsets.ModelViewSet):
                 },
                 status=status.HTTP_404_NOT_FOUND,
             )
-        car_serialized = CarSerializer(car)
-        car_serialized = {
-            k: v
-            for k, v in car_serialized.data.items()
-            if k != "entry_time" and k != "left_time"
-        }
-        return Response(car_serialized)
+        cars = Car.objects.filter(plate=pk)
+        for car in cars:
+            if not car.left:
+                calculate_time_spent_of_cars(car)
+        serialized_cars = [CarSerializer(car).data for car in cars]
+        serialized_cars_to_response = [
+            {k: v for k, v in car.items() if k != "left_time"}
+            for car in serialized_cars
+        ]
+        return Response(serialized_cars_to_response)
 
-    def destroy(self, request, pk):
-        car = Car.objects.filter(plate=pk)[0]
+    def destroy(self, request: Request, pk: str) -> Response:
+        car = Car.objects.filter(plate=pk)
         car.delete()
         return Response(
-            {"message": "Instance was succesfully deleted"},
+            {"message": "This car was succesfully deleted from records"},
             status=status.HTTP_204_NO_CONTENT,
         )
 
     @action(detail=True, methods=["get", "put"])
-    def pay(self, request, pk) -> Response:
+    def pay(self, request: Request, pk: str) -> Response:
         car = self.get_object()
         if not car.paid:
             car.paid = True
@@ -58,7 +75,7 @@ class CarViewSet(viewsets.ModelViewSet):
             )
 
     @action(detail=True, methods=["get", "put"])
-    def out(self, request, pk) -> Response:
+    def out(self, request: Request, pk: str) -> Response:
         car = self.get_object()
         if not car.paid:
             return Response(
@@ -70,11 +87,7 @@ class CarViewSet(viewsets.ModelViewSet):
             )
         elif not car.left:
             car.left = True
-            car.left_time = now()
-            duration_in_seconds = (car.left_time - car.entry_time).seconds
-            duration_in_minutes = round(duration_in_seconds / 60)
-            car.time = f"{duration_in_minutes} minutes"
-            car.save()
+            calculate_time_spent_of_cars(car)
             return Response(
                 {
                     "message": "Ok, you can leave. Thanks and we "

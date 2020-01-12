@@ -22,8 +22,8 @@ class CarSerializer(serializers.ModelSerializer):
                     raise serializers.ValidationError(
                         "Car already at parking lot and don't left yet."
                     )
-                elif car.left:
-                    car.delete()
+                # elif car.left:
+                #     car.delete()
         except IndexError:
             pass
         return Car.objects.create(**validated_data)

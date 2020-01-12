@@ -21,8 +21,9 @@ class CarApiTests(BaseAPITestCase, BaseTestCase):
 
     def test_if_a_car_that_doesnt_left_yet_can_enter_again(self):
         response_400_BR = self.client.post(
-            self.main_url, self.car_already_at_parking_lot_json_repr.data,
-            format="json"
+            self.main_url,
+            self.car_already_at_parking_lot_json_repr.data,
+            format="json",
         )
         self.assertEqual(
             response_400_BR.status_code, status.HTTP_400_BAD_REQUEST
@@ -60,8 +61,7 @@ class CarApiTests(BaseAPITestCase, BaseTestCase):
 
     def test_if_a_car_with_unpaid_ticket_can_leave_parking_lot(self):
         response_401_UNAUTHORIZED = self.client.put(
-            f"{self.main_url}{self.car_1_at_database.id}/out/",
-            format="json"
+            f"{self.main_url}{self.car_1_at_database.id}/out/", format="json"
         )
         self.assertEqual(
             response_401_UNAUTHORIZED.status_code, status.HTTP_401_UNAUTHORIZED
@@ -69,26 +69,19 @@ class CarApiTests(BaseAPITestCase, BaseTestCase):
 
     def test_if_a_car_with_unpaid_ticket_can_pay_the_ticket(self):
         response_200_OK = self.client.put(
-            f"{self.main_url}{self.car_1_at_database.id}/pay/",
-            format="json"
+            f"{self.main_url}{self.car_1_at_database.id}/pay/", format="json"
         )
-        self.assertEqual(
-            response_200_OK.status_code, status.HTTP_200_OK
-        )
+        self.assertEqual(response_200_OK.status_code, status.HTTP_200_OK)
 
     def test_if_a_car_with_paid_ticket_can_leave_parking_lot(self):
         response_200_OK = self.client.put(
-            f"{self.main_url}{self.car_2_at_database.id}/out/",
-            format="json"
+            f"{self.main_url}{self.car_2_at_database.id}/out/", format="json"
         )
-        self.assertEqual(
-            response_200_OK.status_code, status.HTTP_200_OK
-        )
+        self.assertEqual(response_200_OK.status_code, status.HTTP_200_OK)
 
     def test_if_a_car_that_already_left_can_came_by_again(self):
         response_201_CREATED = self.client.post(
-            self.main_url, self.leaving_car_json_repr.data,
-            format="json"
+            self.main_url, self.leaving_car_json_repr.data, format="json"
         )
         self.assertEqual(
             response_201_CREATED.status_code, status.HTTP_201_CREATED
