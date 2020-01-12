@@ -12,7 +12,7 @@ from typing import Union, List
 def calculate_time_spent_of_cars(car: Car) -> None:
     """
     Calculate the time spent of a car at parking lot when the info
-    by plate is retrieved.
+    by plate or by id is retrieved.
     """
     car.left_time = now()
     duration_in_seconds = (car.left_time - car.entry_time).seconds
@@ -37,7 +37,9 @@ def check_plate_mask_with_a_try_except_block(pk: str) -> Union[None, Response]:
 
 def search_by_id_with_a_try_except_block(pk: str) -> Union[Car, Response]:
     """
-    Try to search an id = pk sent by request.
+    Try to search an id using pk sent by request.
+    If any car was founded, the function will return a HTTP 404 response.
+    Else, the returned value is the car instance.
     """
     try:
         car = Car.objects.get(pk=pk)
@@ -52,6 +54,10 @@ def search_by_id_with_a_try_except_block(pk: str) -> Union[Car, Response]:
 def search_cars_by_plate(pk: str) -> Union[Response, List[dict]]:
     """
     Try to search cars by plate number.
+    If the query not found any car with the sent plate, the returned
+    value will be a HTTP 404 response.
+    Else, the returned value will be a list of dictionaries that
+    will be serialized into json format.
     """
     cars = Car.objects.filter(plate=pk)
     if not cars:
@@ -64,9 +70,26 @@ def search_cars_by_plate(pk: str) -> Union[Response, List[dict]]:
             calculate_time_spent_of_cars(car)
     serialized_cars = [CarSerializer(car).data for car in cars]
     serialized_cars_without_left_time_data = [
-        {k: v for k, v in car.items() if k != "left_time"} for car in serialized_cars
+        {
+            k: v for k, v in car.items() if k != "left_time"
+        } for car in serialized_cars
     ]
     return serialized_cars_without_left_time_data
+
+
+def http_400_message_when_user_try_pay_or_leave_by_plate():
+    """
+    To avoid code repetition to response HTTP 400 when
+    user try to pay or leave car by plate number instead by id
+    this function will do this job.
+    """
+    return Response(
+        {
+            "message": 
+            "You can't pay or leave car by plate number, only by register id"
+        },
+        status=status.HTTP_400_BAD_REQUEST,
+    )
 
 
 class CarViewSet(viewsets.ModelViewSet):
@@ -151,46 +174,52 @@ class CarViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["get", "put"])
     def pay(self, request: Request, pk: str) -> Response:
-        car = self.get_object()
-        if not car.paid:
-            car.paid = True
-            car.save()
-            return Response(
-                {"message": "The ticket was paid succesfully"},
-                status=status.HTTP_200_OK,
-            )
+        if pk.isdigit():
+            car = self.get_object()
+            if not car.paid:
+                car.paid = True
+                car.save()
+                return Response(
+                    {"message": "The ticket was paid succesfully"},
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(
+                    {"message": "This car's ticket was already paid"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
         else:
-            return Response(
-                {"message": "This car's ticket was already paid"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return http_400_message_when_user_try_pay_or_leave_by_plate()
 
     @action(detail=True, methods=["get", "put"])
     def out(self, request: Request, pk: str) -> Response:
-        car = self.get_object()
-        if not car.paid:
-            return Response(
-                {
-                    "message": "This car can't leave parking lot before "
-                    "paying the ticket"
-                },
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
-        elif not car.left:
-            car.left = True
-            calculate_time_spent_of_cars(car)
-            return Response(
-                {
-                    "message": "Ok, you can leave. Thanks and we "
-                    "expect to see you again."
-                },
-                status=status.HTTP_200_OK,
-            )
+        if pk.isdigit():
+            car = self.get_object()
+            if not car.paid:
+                return Response(
+                    {
+                        "message": "This car can't leave parking lot before "
+                        "paying the ticket"
+                    },
+                    status=status.HTTP_401_UNAUTHORIZED,
+                )
+            elif not car.left:
+                car.left = True
+                calculate_time_spent_of_cars(car)
+                return Response(
+                    {
+                        "message": "Ok, you can leave. Thanks and we "
+                        "expect to see you again."
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(
+                    {
+                        "message": "There isn't a car with this "
+                        "specifications at parking lot"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
         else:
-            return Response(
-                {
-                    "message": "There isn't a car with this "
-                    "specifications at parking lot"
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return http_400_message_when_user_try_pay_or_leave_by_plate()

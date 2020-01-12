@@ -46,7 +46,9 @@ class CarApiTests(BaseAPITestCase, BaseTestCase):
         self.assertEqual(response_404_NOT_FOUND.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_if_incorrect_plate_format_will_return_http_400(self):
-        response_400_BR = self.client.get(f"{self.main_url}{self.wrong_plate_1}/", format="json")
+        response_400_BR = self.client.get(
+            f"{self.main_url}{self.wrong_plate_1}/", format="json"
+        )
         self.assertEqual(response_400_BR.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_if_it_is_possible_to_delete_car_by_plate_from_database(self):
@@ -96,3 +98,9 @@ class CarApiTests(BaseAPITestCase, BaseTestCase):
             self.main_url, self.leaving_car_json_repr.data, format="json"
         )
         self.assertEqual(response_201_CREATED.status_code, status.HTTP_201_CREATED)
+
+    def test_if_it_is_possible_to_pay_ticket_when_pk_is_plate_number(self):
+        response_400_BR = self.client.put(
+            f"{self.main_url}{self.car_1_at_database.plate}/pay/", format="json"
+        )
+        self.assertEqual(response_400_BR.status_code, status.HTTP_400_BAD_REQUEST)
