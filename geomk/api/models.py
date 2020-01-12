@@ -18,7 +18,7 @@ def validate_plate(plate: str):
 class Car(models.Model):
 
     entry_time = models.DateTimeField(default=timezone.now)
-    left_time = models.DateTimeField(default="2020-01-01T00:00:00.00")
+    left_time = models.DateTimeField(default="2020-01-01T00:00:00.000000Z")
     time = models.CharField(max_length=13, default="0 minutes")
     paid = models.BooleanField(default=False)
     left = models.BooleanField(default=False)
