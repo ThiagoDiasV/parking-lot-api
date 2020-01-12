@@ -39,6 +39,4 @@ class TestModelsSerializers(BaseTestCase):
 
     def test_serialized_car_with_wrong_plate_can_enter_parking_lot(self):
         car_serialized = CarSerializer(self.car_with_wrong_plate_1)
-        self.assertRaises(
-            ValidationError, validate_plate, car_serialized.data["plate"]
-        )
+        self.assertRaises(ValidationError, validate_plate, car_serialized.data["plate"])
