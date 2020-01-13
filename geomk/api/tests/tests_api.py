@@ -103,4 +103,4 @@ class CarApiTests(BaseAPITestCase, BaseTestCase):
         response_400_BR = self.client.put(
             f"{self.main_url}{self.car_1_at_database.plate}/pay/", format="json"
         )
-        self.assertEqual(response_400_BR.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_400_BR.status_code, status.HTTP_400_BAD_REQUEST)
