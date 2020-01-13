@@ -251,3 +251,83 @@ Returns json or html data with a status message.
   - Content
 
     `{ "message": "There isn't a car with this specifications at parking lot" }`
+
+### Delete a car by plate number
+
+Returns json or html data with a status message confirming the deleted car.
+
+- URL
+
+  `/parking/{plate}/`
+
+- Method
+
+  `DELETE`
+
+- URL params
+
+  `None`
+
+- Data params
+
+  `None`
+
+- Success Response
+
+  - HTTP status code
+
+    `204 NO CONTENT`
+
+  - Content
+
+    `{ "message": "This car was succesfully deleted from records" }`
+
+- Error Response
+
+  - HTTP status code
+
+    `404 NO CONTENT`
+
+  - Content
+
+    `{ "message": "There isn't a car matching this query." }`
+
+### Delete a specific register by id
+
+Returns json or html data with a status message confirming the deleted car.
+
+- URL
+
+  `/parking/{id}/`
+
+- Method
+
+  `DELETE`
+
+- URL params
+
+  `None`
+
+- Data params
+
+  `None`
+
+- Success Response
+
+  - HTTP status code
+
+    `204 NO CONTENT`
+
+  - Content
+
+    `{ "message": "This entry register was succesfully deleted from records" }`
+
+- Error Response
+
+  - HTTP status code
+
+    `404 NO CONTENT`
+
+  - Content
+
+    `{ "message": "There isn't an instance with this id at database" }`
