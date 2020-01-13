@@ -28,6 +28,10 @@ And then with Docker and docker-compose, run:
 
     parking-mk-challenge $ docker-compose up --build
 
+or
+
+    parking-mk-challenge $ sudo docker-compose up --build
+
 This command above will:
 
 - Create and migrate database
@@ -65,3 +69,7 @@ This API and the Github repository are covered by CircleCI continuous integratio
 To try locally, you'll need CircleCI CLI tool. Install this and run the command below
 
     parking-mk-challenge $ circlecli build
+
+Or
+
+    parking-mk-challenge $ sudo circleci build
