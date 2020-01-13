@@ -1,6 +1,24 @@
 # Parking MK Rest API
 
-Parking MK is a Rest API for parking lots.
+Parking MK is a Rest API for parking lots. This is part of GeoMK developer challenge.
+
+## Developed by
+
+Thiago Dias de Vasconcelos Araujo
+
+## Requirements
+
+### Necessary
+
+- Python 3.8
+- Django 3.0
+- Django Rest Framework 3.11
+
+### Optional (almost necessary)
+
+- Docker
+- Docker compose
+- CircleCI CLI
 
 ## How to Install
 

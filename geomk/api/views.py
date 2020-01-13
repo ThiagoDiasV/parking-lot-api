@@ -70,9 +70,7 @@ def search_cars_by_plate(pk: str) -> Union[Response, List[dict]]:
             calculate_time_spent_of_cars(car)
     serialized_cars = [CarSerializer(car).data for car in cars]
     serialized_cars_without_left_time_data = [
-        {
-            k: v for k, v in car.items() if k != "left_time"
-        } for car in serialized_cars
+        {k: v for k, v in car.items() if k != "left_time"} for car in serialized_cars
     ]
     return serialized_cars_without_left_time_data
 
@@ -84,10 +82,7 @@ def http_400_message_when_user_try_pay_or_leave_by_plate():
     this function will do this job.
     """
     return Response(
-        {
-            "message": 
-            "You can't pay or leave car by plate number, only by register id"
-        },
+        {"message": "You can't pay or leave car by plate number, only by register id"},
         status=status.HTTP_400_BAD_REQUEST,
     )
 
