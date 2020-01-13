@@ -95,6 +95,7 @@ def http_400_message_when_user_try_pay_or_leave_by_plate():
 class CarViewSet(viewsets.ModelViewSet):
     queryset = Car.objects.all()
     serializer_class = CarSerializer
+    filter_fields = "__all__"
 
     def retrieve(self, request: Request, pk: str) -> Response:
         """
