@@ -30,7 +30,7 @@ def check_plate_mask_with_a_try_except_block(pk: str) -> Union[None, Response]:
         validate_plate(pk)
     except ValidationError:
         return Response(
-            {"message": "Invalid plate format. Correct format: AAA-1111"},
+            {"message": "Invalid plate format. Correct format: AAA-1111 (uppercase letters)"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
