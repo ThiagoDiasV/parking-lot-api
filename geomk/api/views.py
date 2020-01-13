@@ -30,7 +30,10 @@ def check_plate_mask_with_a_try_except_block(pk: str) -> Union[None, Response]:
         validate_plate(pk)
     except ValidationError:
         return Response(
-            {"message": "Invalid plate format. Correct format: AAA-1111 (uppercase letters)"},
+            {
+                "message": "Invalid plate format. "
+                "Correct format: AAA-1111 (uppercase letters)"
+            },
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -70,7 +73,9 @@ def search_cars_by_plate(pk: str) -> Union[Response, List[dict]]:
             calculate_time_spent_of_cars(car)
     serialized_cars = [CarSerializer(car).data for car in cars]
     serialized_cars_without_left_time_data = [
-        {k: v for k, v in car.items() if k != "left_time"} for car in serialized_cars
+        {
+            k: v for k, v in car.items() if k != "left_time"
+        } for car in serialized_cars
     ]
     return serialized_cars_without_left_time_data
 
@@ -82,7 +87,10 @@ def http_400_message_when_user_try_pay_or_leave_by_plate():
     this function will do this job.
     """
     return Response(
-        {"message": "You can't pay or leave car by plate number, only by register id"},
+        {
+            "message": "You can't pay or leave car by plate number, "
+            "only by register id"
+        },
         status=status.HTTP_400_BAD_REQUEST,
     )
 
@@ -129,7 +137,7 @@ class CarViewSet(viewsets.ModelViewSet):
         Destroy function overrided to allow destroy registers by
         id and cars by plate number. Deleting one single id, cars that
         have more than one register continue to exist. Deleting all records
-        by plate will delete corresponding car from records. 
+        by plate will delete corresponding car from records.
         """
         if pk.isdigit():
             entry_register_or_response_404 = search_by_id_with_a_try_except_block(pk)
@@ -141,13 +149,17 @@ class CarViewSet(viewsets.ModelViewSet):
                 entry_register.delete()
                 return Response(
                     {
-                        "message": "This entry register was succesfully deleted from records"
+                        "message": "This entry register "
+                        "was succesfully deleted from records"
                     },
                     status=status.HTTP_204_NO_CONTENT,
                 )
             else:
                 return Response(
-                    {"message": "There isn't a register with this id at database"},
+                    {
+                        "message": "There isn't a register "
+                        "with this id at database"
+                    },
                     status=status.HTTP_404_NOT_FOUND,
                 )
         else:
@@ -159,7 +171,10 @@ class CarViewSet(viewsets.ModelViewSet):
             if car:
                 car.delete()
                 return Response(
-                    {"message": "This car was succesfully deleted from records"},
+                    {
+                        "message": "This car was "
+                        "succesfully deleted from records"
+                    },
                     status=status.HTTP_204_NO_CONTENT,
                 )
             else:

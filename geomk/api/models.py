@@ -11,7 +11,8 @@ def validate_plate(plate: str):
     regexp = r"^[A-Z]{3}-\d{4}$"
     if not re.search(regexp, plate):
         raise ValidationError(
-            f"{plate} isn't a valid plate format. The correct format is AAA-1111"
+            f"{plate} isn't a valid plate format. "
+            "The correct format is AAA-1111 (uppercase letters)"
         )
 
 
