@@ -9,7 +9,7 @@ Click==7.0
 decorator==4.4.1
 Django==3.0.3
 django-filter==2.2.0
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 httpie==2.0.0
 idna==2.8
 ipdb==0.12.3
